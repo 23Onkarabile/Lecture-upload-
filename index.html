@@ -44,6 +44,9 @@
   </div>
 
  <script type="module">
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
   const password = prompt("Enter lecturer password:");
 
   if (password !== "admin123") {
@@ -59,9 +62,7 @@
  }
  
  
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-
+  
   const firebaseConfig = {
     apiKey: "AIzaSyC94uOY2xUFO00lYU3V9rMW8n5r5stTeJw",
     authDomain: "mark-verification-system.firebaseapp.com",
