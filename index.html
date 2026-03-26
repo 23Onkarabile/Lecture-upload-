@@ -51,7 +51,12 @@
     window.location.href = "index.html";
   }
 
- 
+ function generateId(subject, semester, task) {
+  return `${subject}_${semester}_${task}`
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .trim();
+ }
  
  
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
@@ -105,17 +110,17 @@
     const task = document.getElementById("task").value;
     const mark = document.getElementById("mark").value;
 
-    const id = subject + "_" + semester + "_" + task;
-
+    const id = generateId(subject, semester, task);
     try {
       await setDoc(doc(db, "marks", id), {
-        subject,
-        semester,
-        task,
-        mark: Number(mark)
-      });
+  subject,
+  semester,
+  task,
+  lecturerMark: Number(mark)
+}, { merge: true });
 
-      alert("Saved to Firebase ✅");
+
+      alert("SAVED TO FIREBASE");
 
     } catch (err) {
       console.error(err);
