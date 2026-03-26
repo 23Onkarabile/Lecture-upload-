@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="navbar">Lecturer Dashboard</div>
+
+  <div class="container">
+    <div class="card">
+
+      <select id="subject">
+        <option>English</option>
+        <option>Mathematics</option>
+        <option>Life Orientation</option>
+        <option>Multimedia</option>
+        <option>Pcom</option>
+        <option>System analysis</option>
+        <option>Data Communication</option>
+      </select>
+
+      <select id="semester" onchange="updateTasks()">
+        <option>1st Semester</option>
+        <option>2nd Semester</option>
+        <option>3rd Semester</option>
+      </select>
+
+      <select id="task">
+        <option>Task 1</option>
+        <option>Assignment 1</option>
+      </select>
+
+      <input type="number" id="mark" placeholder="Enter mark %">
+
+    <button onclick="saveMark()">Save</button>
+
+    </div>
+  </div>
+
+ <script type="module">
+  const password = prompt("Enter lecturer password:");
+
+  if (password !== "admin123") {
+    alert("Access denied");
+    window.location.href = "index.html";
+  }
+
+ 
+ 
+ 
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC94uOY2xUFO00lYU3V9rMW8n5r5stTeJw",
+    authDomain: "mark-verification-system.firebaseapp.com",
+    projectId: "mark-verification-system",
+    storageBucket: "mark-verification-system.firebasestorage.app",
+    messagingSenderId: "361707277001",
+    appId: "1:361707277001:web:f161fc8e379fc4139e9b18"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  function updateTasks() {
+    const semester = document.getElementById("semester").value;
+    const taskSelect = document.getElementById("task");
+
+    taskSelect.innerHTML = "";
+
+    if (semester === "1st Semester") {
+      taskSelect.innerHTML = `
+        <option>Task 1</option>
+        <option>Assignment 1</option>
+      `;
+    }
+
+    if (semester === "2nd Semester") {
+      taskSelect.innerHTML = `
+        <option>Task 2</option>
+        <option>Assignment 2</option>
+      `;
+    }
+
+    if (semester === "3rd Semester") {
+      taskSelect.innerHTML = `
+        <option>Task 3</option>
+        <option>Assignment 3</option>
+      `;
+    }
+  }
+
+  window.updateTasks = updateTasks;
+
+  window.saveMark = async function () {
+    const subject = document.getElementById("subject").value;
+    const semester = document.getElementById("semester").value;
+    const task = document.getElementById("task").value;
+    const mark = document.getElementById("mark").value;
+
+    const id = subject + "_" + semester + "_" + task;
+
+    try {
+      await setDoc(doc(db, "marks", id), {
+        subject,
+        semester,
+        task,
+        mark: Number(mark)
+      });
+
+      alert("Saved to Firebase ✅");
+
+    } catch (err) {
+      console.error(err);
+      alert("Error saving ❌");
+    }
+  };
+</script>
+
+</body>
+
+</html>
