@@ -1,28 +1,25 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>Lecturer Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
   <div class="navbar">Lecturer Dashboard</div>
 
   <div class="container">
     <div class="card">
-
       <select id="subject">
-        <option>English</option>
-        <option>Mathematics</option>
-        <option>Life Orientation</option>
-        <option>Multimedia</option>
-        <option>Pcom</option>
-        <option>System analysis</option>
-        <option>Data Communication</option>
+        <option value="English">English</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Life Orientation">Life Orientation</option>
+        <option value="Multimedia">Multimedia</option>
+        <option value="Pcom">Pcom</option>
+        <option value="System Analysis">System Analysis</option>
+        <option value="Datacommunication">Data Communication</option>
       </select>
 
       <select id="semester" onchange="updateTasks()">
@@ -37,32 +34,21 @@
       </select>
 
       <input type="number" id="mark" placeholder="Enter mark %">
-
-    <button onclick="saveMark()">Save</button>
-
+      <button onclick="saveMark()">Save to Firebase</button>
     </div>
   </div>
 
- <script type="module">
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
+  // Password Protection
   const password = prompt("Enter lecturer password:");
-
   if (password !== "admin123") {
     alert("Access denied");
     window.location.href = "index.html";
   }
 
- function generateId(subject, semester, task) {
-  return `${subject}_${semester}_${task}`
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .trim();
- }
- 
- 
-  
   const firebaseConfig = {
     apiKey: "AIzaSyC94uOY2xUFO00lYU3V9rMW8n5r5stTeJw",
     authDomain: "mark-verification-system.firebaseapp.com",
@@ -75,61 +61,56 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  function updateTasks() {
+  // FIXED: This ID generator now matches the Student system exactly
+  function generateId(subject, semester, task) {
+    return `${subject}_${semester}_${task}`
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .trim();
+  }
+
+  window.updateTasks = function() {
     const semester = document.getElementById("semester").value;
     const taskSelect = document.getElementById("task");
-
     taskSelect.innerHTML = "";
 
     if (semester === "1st Semester") {
-      taskSelect.innerHTML = `
-        <option>Task 1</option>
-        <option>Assignment 1</option>
-      `;
+      taskSelect.innerHTML = `<option>Task 1</option><option>Assignment 1</option>`;
+    } else if (semester === "2nd Semester") {
+      taskSelect.innerHTML = `<option>Task 2</option><option>Assignment 2</option>`;
+    } else if (semester === "3rd Semester") {
+      taskSelect.innerHTML = `<option>Task 3</option><option>Assignment 3</option>`;
     }
+  };
 
-    if (semester === "2nd Semester") {
-      taskSelect.innerHTML = `
-        <option>Task 2</option>
-        <option>Assignment 2</option>
-      `;
-    }
-
-    if (semester === "3rd Semester") {
-      taskSelect.innerHTML = `
-        <option>Task 3</option>
-        <option>Assignment 3</option>
-      `;
-    }
-  }
-
-  window.updateTasks = updateTasks;
-
-  window.saveMark = async function () {
+  window.saveMark = async function() {
     const subject = document.getElementById("subject").value;
     const semester = document.getElementById("semester").value;
     const task = document.getElementById("task").value;
     const mark = document.getElementById("mark").value;
 
+    if (!mark) {
+      alert("Please enter a mark first!");
+      return;
+    }
+
     const id = generateId(subject, semester, task);
+    
     try {
+      // Using merge: true so we don't overwrite the student's OCR data
       await setDoc(doc(db, "marks", id), {
-  subject,
-  semester,
-  task,
-  lecturerMark: Number(mark)
-}, { merge: true });
+        subject,
+        semester,
+        task,
+        lecturerMark: Number(mark)
+      }, { merge: true });
 
-
-      alert("SAVED TO FIREBASE");
-
+      alert("✅ SAVED: Student will see this instantly!");
     } catch (err) {
       console.error(err);
       alert("Error saving ❌");
     }
   };
 </script>
-
 </body>
-
 </html>
